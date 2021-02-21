@@ -253,10 +253,9 @@ class Graph(pygraph.classes.UndirectedGraph):
         return super().new_edge(node_a, node_b)
 
     def related(self, node_id):
-        """Return the ids of all nodes that are related to the specified node,
-        i.e. all messages in the same thread.
+        """Iterator over the ids of all nodes that are related to the
+        specified node, i.e. all messages in the same thread.
         """
-        node = self.get_node(node_id)
         yield from self._related(node_id, set([node_id]))
 
     def _related(self, node_id, visited):
@@ -545,4 +544,4 @@ if cleaner.keepFlaggedThreads or cleaner.keepUnreadThreads:
 if cleaner.keepRead:
     logger.info('  Read:     %5d' % cleaner.stats['read'])
 logger.info('  Recent:   %5d' % cleaner.stats['recent'])
-logger.info('Affected messages:  %5d' % cleaner.stats[mode])
+logger.info('Affected messages:  %5d (%s)' % (cleaner.stats[mode], mode))
