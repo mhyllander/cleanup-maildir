@@ -397,14 +397,14 @@ class MaildirCleaner(object):
             mid = msg.getMessageId()
             if mid in self.keepMsgIds:
                 if msg.isFlagged():
-                    self.stats['flagged'] += 1
                     self.log(logging.DEBUG, "Keeping #%d (flagged)" % i, msg)
+                    self.stats['flagged'] += 1
                 else: # msg.isUnread()
-                    self.stats['unread'] += 1
                     self.log(logging.DEBUG, "Keeping #%d (unread)" % i, msg)
+                    self.stats['unread'] += 1
             elif mid in self.relatedMsgIds:
-                self.stats['related'] += 1
                 self.log(logging.DEBUG, "Keeping #%d (part of kept thread)" % i, msg)
+                self.stats['related'] += 1
             elif self.keepRead and not msg.isUnread():
                 self.log(logging.DEBUG, "Keeping #%d (read)" % i, msg)
                 self.stats['read'] += 1
