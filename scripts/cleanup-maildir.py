@@ -94,6 +94,7 @@ __version__ = "0.3.0"
 
 import pygraph
 import email
+import email.errors
 import email.policy
 import mailbox
 import getopt
@@ -153,7 +154,15 @@ class MaildirMessage(mailbox.MaildirMessage):
         return re.sub(r'^(re|fwd?):\s*', '', s.lower().strip())
 
     def getMessageId(self):
-        return self.get('Message-ID')
+        try:
+            return self.get('Message-ID')
+        except (email.errors.HeaderParseError, IndexError):
+            # in case of rare parsing problems, try to return the raw value
+            a = [v for (h,v) in self.raw_items() if h == 'Message-ID']
+            if len(a) > 0:
+                return a[0]
+            else:
+                return None
 
     def getInReplyTo(self):
         irt = self.get('In-Reply-To')
@@ -394,6 +403,7 @@ class MaildirCleaner(object):
         # Also, the message key is needed for removing the message.
         for i, msg_key in enumerate(maildir.iterkeys()):
             msg = maildir.get_message(msg_key)
+            self.log(logging.DEBUG, "Checking #%d" % i, msg)
             mid = msg.getMessageId()
             if mid in self.keepMsgIds:
                 if msg.isFlagged():
